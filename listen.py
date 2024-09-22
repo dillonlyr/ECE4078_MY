@@ -166,23 +166,6 @@ def socket_server():
 
 # Start the socket server in a new thread to keep it running
 threading.Thread(target=socket_server).start()
-
-# Your existing Flask and robot control code remains the same...
-# Initialize flask
-def run_flask():
-    app.run(host='0.0.0.0', port=5000)
-flask_thread = threading.Thread(target=run_flask)
-flask_thread.daemon = True
-flask_thread.start()
-
-# Your existing move_robot and other code remains unchanged
-try:
-    while True:
-        move_robot()
-except KeyboardInterrupt:
-    pibot.stop()
-    picam2.stop()
-    print("Program interrupted by user.")
 #***********************************#
 
 try:
