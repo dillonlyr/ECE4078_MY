@@ -1,11 +1,10 @@
 from simple_pid import PID
 from picamera2 import Picamera2
-from flask import Flask, Response, request
+from flask import Flask, Response, request, jsonify
 from gpiozero import Robot, Motor, DigitalInputDevice
 import io
 import time
 import threading
-
 
 app = Flask(__name__)
 
@@ -97,6 +96,16 @@ def move():
     
     # if 'time' in request.args:
 
+#***********************************#
+# Receive a request for encoder values
+@app.route('/encoders')
+def get_encoders():
+    return jsonify({
+        "left_encoder": left_encoder.value,
+        "right_encoder": right_encoder.value
+    })
+#***********************************#
+
 
 # Constants
 in1 = 17 # may have to change this
@@ -134,16 +143,6 @@ def run_flask():
 flask_thread = threading.Thread(target=run_flask)
 flask_thread.daemon = True
 flask_thread.start()
-
-#***********************************#
-# Receive a request for encoder values
-@app.route('/encoders')
-def get_encoders():
-    return jsonify({
-        "left_encoder": left_encoder.value,
-        "right_encoder": right_encoder.value
-    })
-#***********************************#
 
 try:
     while True:
