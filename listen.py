@@ -136,36 +136,13 @@ flask_thread.daemon = True
 flask_thread.start()
 
 #***********************************#
-import socket  # For the socket server
-import threading  # For running socket server in a separate thread
-
-# Function to handle incoming client connections
-def handle_client(client_socket):
-    global left_encoder, right_encoder
-    while True:
-        request = client_socket.recv(1024).decode()  # Receive a request
-        if request == "GET_COUNTERS":  # If client requests counter values
-            counter_values = f"{left_encoder.value},{right_encoder.value}"  # Send both counter values
-            client_socket.send(counter_values.encode())  # Send counter values back to client
-        elif request == "QUIT":  # Client wants to disconnect
-            client_socket.close()
-            break
-
-# Function to set up the socket server
-def socket_server():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(("0.0.0.0", 9999))  # Bind to all available interfaces on port 9999
-    server.listen(5)
-    print("Socket server listening on port 9999...")
-
-    while True:
-        client_socket, addr = server.accept()
-        print(f"Accepted connection from {addr}")
-        client_handler = threading.Thread(target=handle_client, args=(client_socket,))
-        client_handler.start()
-
-# Start the socket server in a new thread to keep it running
-threading.Thread(target=socket_server).start()
+# Receive a request for encoder values
+@app.route('/encoders')
+def get_encoders():
+    return jsonify({
+        "left_encoder": left_encoder.value,
+        "right_encoder": right_encoder.value
+    })
 #***********************************#
 
 try:
